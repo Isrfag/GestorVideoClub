@@ -29,6 +29,41 @@
             color: #fff;
             margin-right: 10px;
             text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        /* Hover para el logo "Videoclub" */
+        header > div > a:hover {
+            color: #ffcc00;
+            text-decoration: underline;
+        }
+
+        /* Hover para los enlaces de la nav */
+        nav a {
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffcc00;
+            border-radius: 4px;
+        }
+
+        /* Hover para el botón "Usuarios" */
+        nav a.admin-btn {
+            color: white; 
+            background: #157a15; 
+            padding: 6px 12px; 
+            border-radius: 5px; 
+            margin-left: 20px;  
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        nav a.admin-btn:hover {
+            background: #0f5a10;
+            color: #fff;
         }
 
         main {
@@ -42,6 +77,11 @@
             border-radius: 4px;
             color: white;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c9302c;
         }
 
         /* POPUP */
@@ -89,48 +129,36 @@
             color:#1565c0;
         }
 
+        /* Hover tarjetas */
         .card:hover {
             transform: translateY(-10px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        /* Para quitar subrayado en los enlaces que envuelven la tarjeta */
+        /* Para que toda la tarjeta sea clicable */
         a.card-link {
             text-decoration: none;
             color: inherit;
-            display: block; /* Importante para que toda la tarjeta sea clicable */
+            display: block;
         }
+
     </style>
 </head>
 
 <header>
     <div>
-        <a th:href="@{/home}" style="color: white; text-decoration: none;">
+        <a th:href="@{/home}">
             🎬 <strong>Videoclub</strong>
         </a>
     </div>
     
     <nav style="display: flex; align-items: center; gap: 15px;">
-        <!-- Enlaces normales -->
-        <a th:href="@{/peliculas}" style="color: white; text-decoration: none; padding: 6px 12px;">Películas</a>
-        <a th:href="@{/alquileres}" style="color: white; text-decoration: none; padding: 6px 12px;">Alquileres</a>
-        <a th:href="@{/clientes}" sec:authorize="hasRole('ADMIN')" style="color: white; text-decoration: none; padding: 6px 12px;">Clientes</a>
+        <a th:href="@{/peliculas}">Películas</a>
+        <a th:href="@{/alquileres}">Alquileres</a>
+        <a th:href="@{/clientes}" sec:authorize="hasRole('ADMIN')">Clientes</a>
 
-        <!-- Solo para admin, como botón separado -->
-        <a th:href="@{/usuarios}" 
-        sec:authorize="hasRole('ADMIN')"
-        style="
-            color: white; 
-            background: #157a15; 
-            padding: 6px 12px; 
-            border-radius: 5px; 
-            margin-left: 20px;  /* separación extra */
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s;
-        "
-        onmouseover="this.style.background='#0f5a10'"
-        onmouseout="this.style.background='#157a15'">
+        <!-- Botón de admin -->
+        <a th:href="@{/usuarios}" sec:authorize="hasRole('ADMIN')" class="admin-btn">
             Usuarios
         </a>
     </nav>
@@ -185,15 +213,13 @@
     }
 
     // Mostrar popup si hay mensaje o error
-      window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', () => {
         const popup = document.getElementById("popup");
-        
         if (popup && popup.textContent.trim() !== "") {
             popup.style.display = 'block';
             setTimeout(() => popup.style.display = 'none', 4000);
         }
     });
-
 </script>
 
 </body>

@@ -51,17 +51,16 @@
                 <td style="padding:10px; border:1px solid #ddd; vertical-align:middle;">
                     <!-- BOTÓN DEVOLVER SOLO SI NO SE HA DEVUELTO -->
                     <form th:if="${alquiler.fechaFin == null}"
-                          th:action="@{/alquileres/{id}/devolver(id=${alquiler.id})}"
-                          method="post"
-                          style="display:inline; margin-right:8px;">
-                        <input type="hidden"
-                               name="_csrf"
-                               th:value="${_csrf.token}">
+                        th:action="@{'/alquileres/devolver/' + ${alquiler.id}}"
+                        method="post"
+                        style="display:inline; margin-right:8px;">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
                         <button style="padding:6px 12px; background:#157a15; color:white; border:none; border-radius:4px; cursor:pointer;">
                             ✅ Devolver
                         </button>
                     </form>
 
+                    <!-- MARCAR COMO DEVUELTO -->
                     <span th:if="${alquiler.fechaFin != null}" style="font-weight:bold; color:#555;">
                         ✅ Devuelto
                     </span>
