@@ -76,8 +76,12 @@ public class PeliculaController {
                 .map(ClienteMapper::toDto) // <-- entity -> dto
                 .collect(Collectors.toList()));
 
-        model.addAttribute("mensaje", mensaje);
-        model.addAttribute("error", error);
+        if (!mensaje.isEmpty()) {
+            model.addAttribute("mensaje", mensaje);
+        }
+        if (!error.isEmpty()) {
+            model.addAttribute("error", error);
+        }
         model.addAttribute("totalAlquileres", alquileres.size());
 
         return "peliculas/lista";

@@ -1,16 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Videoclub</title>
-</head>
-<body>
-<h1>🎬 Bienvenido al Gestor de Videoclub</h1>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      th:replace="~{layout :: layout('Bienvenido', ~{this :: content})}">
 
-<ul>
-    <li><a th:href="@{/peliculas}">🎞️ Gestionar Películas</a></li>
-    <li><a th:href="@{/clientes}">👤 Gestionar Clientes</a></li>
-    <li><a th:href="@{/alquileres}">📦 Gestionar Alquileres</a></li>
-</ul>
+<div th:fragment="content">
 
-</body>
+    <h1 style="text-align:center; margin-bottom:40px;">🎬 Bienvenido al Gestor del Videoclub</h1>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:30px; justify-items:center;">
+
+        <!-- Tarjeta Películas -->
+        <a th:href="@{/peliculas}" style="text-decoration:none; color:inherit;">
+            <div class="card" 
+                 style="background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition: transform 0.3s, box-shadow 0.3s;">
+                <img th:src="@{/images/pelis.jpg}" alt="Películas" style="width:100%; height:150px; object-fit:cover;">
+                <div style="padding:20px; font-size:20px; font-weight:bold; color:#1565c0;">
+                    🎞️ Gestionar Películas
+                </div>
+            </div>
+        </a>
+
+        <!-- Tarjeta Clientes (solo ADMIN) -->
+        <a th:href="@{/clientes}" sec:authorize="hasRole('ADMIN')" style="text-decoration:none; color:inherit;">
+            <div class="card" 
+                 style="background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition: transform 0.3s, box-shadow 0.3s;">
+                <img th:src="@{/images/cliente.png}" alt="Clientes" style="width:100%; height:150px; object-fit:cover;">
+                <div style="padding:20px; font-size:20px; font-weight:bold; color:#1565c0;">
+                    👤 Gestionar Clientes
+                </div>
+            </div>
+        </a>
+
+        <!-- Tarjeta Alquileres -->
+        <a th:href="@{/alquileres}" style="text-decoration:none; color:inherit;">
+            <div class="card" 
+                 style="background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition: transform 0.3s, box-shadow 0.3s;">
+                <img th:src="@{/images/alquiler.png}" alt="Alquileres" style="width:100%; height:150px; object-fit:cover;">
+                <div style="padding:20px; font-size:20px; font-weight:bold; color:#1565c0;">
+                    📦 Gestionar Alquileres
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+</div>
+
 </html>

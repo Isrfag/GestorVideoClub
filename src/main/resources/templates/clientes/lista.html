@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      th:replace="~{layout :: layout('Lista de Clientes', ~{this :: content})}">
+
+    <div th:fragment="content">
+
+        <h1>👥 Lista de Clientes</h1>
+
+        <div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+        <!-- Nuevo Cliente -> Admin o Empleado -->
+        <div style="margin-bottom: 15px;">
+            <a th:href="@{/clientes/admin/nuevo}">➕ Nuevo Cliente</a>
+        </div>
+
+        <table style="
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        ">
+            <thead>
+            <tr>
+                <th style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">ID</th>
+                <th style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">Nombre</th>
+                <th style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">Apellido</th>
+                <th style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">Email</th>
+                <th style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">Teléfono</th>
+                <th sec:authorize="hasRole('ADMIN')" style="padding: 10px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle;">Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;" th:text="${c.id}"></td>
+                <td style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;" th:text="${c.nombre}"></td>
+                <td style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;" th:text="${c.apellido}"></td>
+                <td style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;" th:text="${c.email}"></td>
+                <td style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;" th:text="${c.telefono}"></td>
+
+                <!-- Acciones solo Admin -->
+                <td sec:authorize="hasRole('ADMIN')" 
+                    style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;">
+                    
+                    <a th:href="@{|/clientes/editar/${c.id}|}" style="margin-right:10px;">✏️ Editar</a>
+
+                    <form th:action="@{|/clientes/eliminar/${c.id}|}" method="post" style="display:inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <button type="submit">❌ Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${clientes.empty}">
+                <td colspan="6" style="padding: 8px 15px; border: 1px solid #ddd; vertical-align: middle;">No hay clientes registrados.</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</html>

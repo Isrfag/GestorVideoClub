@@ -1,49 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>🎞️ Alquilar Película</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #fafafa; margin: 20px; }
-        h1 { color: #333; margin-bottom: 20px; }
-        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); max-width: 500px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        select, input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
-        button { margin-top: 15px; padding: 10px 15px; border: none; border-radius: 5px; background-color: #157a15; color: white; cursor: pointer; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; }
-        .success { background-color: #e7f9e7; color: #157a15; }
-        .error { background-color: #fdecea; color: #a71d2a; }
-        a { display: inline-block; margin-top: 15px; text-decoration: none; color: #333; }
-    </style>
-</head>
-<body>
-<h1>🎞️ Alquilar Película</h1>
 
-<div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
-<div th:if="${error}" class="alert error" th:text="${error}"></div>
+<body th:replace="~{layout :: layout('Alquilar Película', ~{this :: content})}">
 
-<form th:action="@{/alquileres}" method="post">
-    <input type="hidden" name="peliculaId" th:value="${pelicula.id}" />
+    <div th:fragment="content">
+    <h1>🎞️ Alquilar Película</h1>
 
-    <label>Película:</label>
-    <input type="text" th:value="${pelicula.titulo}" disabled />
+    <div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
 
-    <label>Cliente:</label>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <select name="clienteId" required style="flex: 1;">
+    <form th:action="@{/alquileres}" method="post"
+          style="background:white;padding:20px;border-radius:8px;
+                 box-shadow:0 0 5px rgba(0,0,0,0.1);max-width:500px;display:flex;
+                 flex-direction:column;gap:15px;">
+
+        <!-- ✅ CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- Id de película -->
+        <input type="hidden" name="peliculaId" th:value="${pelicula.id}" />
+
+        <label>Película:</label>
+        <input type="text" th:value="${pelicula.titulo}" disabled
+               style="width:100%;padding:10px 12px;font-size:16px;border-radius:5px;
+                      border:1px solid #ccc;"/>
+
+        <label>Cliente:</label>
+        <select name="clienteId" required
+                style="width:100%;padding:10px 12px;font-size:16px;border-radius:5px;
+                       border:1px solid #ccc;">
             <option value="">-- Selecciona un cliente --</option>
             <option th:each="cliente : ${clientes}"
                     th:value="${cliente.id}"
                     th:text="${cliente.nombre} + ' ' + ${cliente.apellido}">
             </option>
         </select>
-        <a th:href="@{/clientes/nuevo}" style="padding: 8px 12px; background-color: #157a15; color: white; border-radius: 5px; text-decoration: none;">➕ Nuevo cliente</a>
-    </div>
 
-    <button type="submit">🎞️ Alquilar</button>
-</form>
+        <a th:href="@{/clientes/nuevo}"
+           style="display:inline-block;text-align:center;padding:10px 15px;
+                  background:#157a15;color:white;border-radius:5px;
+                  text-decoration:none;font-size:16px;">
+            ➕ Nuevo cliente
+        </a>
 
-<a th:href="@{/peliculas}">⬅️ Volver al catálogo</a>
+        <button type="submit"
+                style="padding:12px 20px;font-size:16px;margin-top:10px;
+                       background:#157a15;color:white;border:none;border-radius:5px;
+                       cursor:pointer;">
+            🎞️ Alquilar
+        </button>
+    </form>
+
+    <br>
+    <a th:href="@{/peliculas}">⬅️ Volver al catálogo</a>
+</div>
+
 </body>
 </html>

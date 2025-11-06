@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<body th:fragment="layout (title, content)">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}">Videoclub</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #333;
+            padding: 12px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a {
+            color: #fff;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 25px;
+        }
+
+        .logout-btn {
+            background: #d9534f;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* POPUP */
+        #popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 350px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            word-wrap: break-word;
+        }
+
+        #popup.exito { background: #28a745; }
+        #popup.error { background: #dc3545; }
+
+        /* Estilos para las tarjetas */
+        .card {
+            background:white; 
+            border-radius:10px; 
+            box-shadow:0 0 10px rgba(0,0,0,0.1); 
+            overflow:hidden; 
+            text-align:center; 
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card div {
+            padding: 20px; 
+            font-size: 20px; 
+            font-weight: bold; 
+            color:#1565c0;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Para quitar subrayado en los enlaces que envuelven la tarjeta */
+        a.card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block; /* Importante para que toda la tarjeta sea clicable */
+        }
+    </style>
+</head>
+
+<header>
+    <div>
+        <a th:href="@{/home}" style="color: white; text-decoration: none;">
+            🎬 <strong>Videoclub</strong>
+        </a>
+    </div>
+    
+    <nav style="display: flex; align-items: center; gap: 15px;">
+        <!-- Enlaces normales -->
+        <a th:href="@{/peliculas}" style="color: white; text-decoration: none; padding: 6px 12px;">Películas</a>
+        <a th:href="@{/alquileres}" style="color: white; text-decoration: none; padding: 6px 12px;">Alquileres</a>
+        <a th:href="@{/clientes}" sec:authorize="hasRole('ADMIN')" style="color: white; text-decoration: none; padding: 6px 12px;">Clientes</a>
+
+        <!-- Solo para admin, como botón separado -->
+        <a th:href="@{/usuarios}" 
+        sec:authorize="hasRole('ADMIN')"
+        style="
+            color: white; 
+            background: #157a15; 
+            padding: 6px 12px; 
+            border-radius: 5px; 
+            margin-left: 20px;  /* separación extra */
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        "
+        onmouseover="this.style.background='#0f5a10'"
+        onmouseout="this.style.background='#157a15'">
+            Usuarios
+        </a>
+    </nav>
+
+    <div sec:authorize="isAuthenticated()">
+        👤 <strong sec:authentication="name">Usuario</strong>
+        (<span sec:authentication="principal.authorities"></span>)
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="logout-btn">Cerrar sesión</button>
+        </form>
+    </div>
+
+    <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}">Iniciar sesión</a>
+    </div>
+</header>
+
+<main>
+    <div th:replace="${content}"></div>
+</main>
+
+<!-- POPUP Exito -->
+<div th:if="${mensaje}" id="popup" class="exito" th:text="${mensaje}"></div>
+
+<!-- Popup de error -->
+<div th:if="${error}" id="popup" class="error" th:text="${error}"></div>
+
+<script th:inline="javascript">
+    window.agregarCopia = function() {
+        const tbody = document.getElementById('copias-body');
+        if (!tbody) return;
+
+        const index = tbody.children.length;
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>
+                <select name="copias[${index}].formato">
+                    <option value="DVD">DVD</option>
+                    <option value="BLURAY">BLURAY</option>
+                    <option value="DIGITAL">DIGITAL</option>
+                </select>
+            </td>
+            <td>
+                <input type="checkbox" name="copias[${index}].disponible" checked />
+            </td>
+            <td>
+                <button type="button" class="btn-remove" onclick="this.closest('tr').remove()">❌</button>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    }
+
+    // Mostrar popup si hay mensaje o error
+      window.addEventListener('DOMContentLoaded', () => {
+        const popup = document.getElementById("popup");
+        
+        if (popup && popup.textContent.trim() !== "") {
+            popup.style.display = 'block';
+            setTimeout(() => popup.style.display = 'none', 4000);
+        }
+    });
+
+</script>
+
+</body>
+</html>

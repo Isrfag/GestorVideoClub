@@ -1,78 +1,87 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${pelicula.id != null} ? 'Editar Película' : 'Nueva Película'"></title>
-    <style>
-        body { font-family: Arial; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 8px; border: 1px solid #ccc; }
-        button { margin-top: 10px; }
-    </style>
-    <script>
-        function agregarCopia() {
-            const tbody = document.getElementById('copias-body');
-            const index = tbody.children.length;
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>
-                    <select name="copias[${index}].formato">
-                        <option value="DVD">DVD</option>
-                        <option value="BLURAY">BLURAY</option>
-                        <option value="DIGITAL">DIGITAL</option>
-                    </select>
-                </td>
-                <td><input type="checkbox" name="copias[${index}].disponible" checked /></td>
-                <td><button type="button" onclick="this.closest('tr').remove()">❌</button></td>
-            `;
-            tbody.appendChild(fila);
-        }
-    </script>
-</head>
-<body>
-<h1 th:text="${pelicula.id != null} ? 'Editar Película' : 'Agregar Nueva Película'"></h1>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout(
+        ${pelicula.id != null} ? 'Editar Película' : 'Nueva Película',
+        ~{::content}
+      )">
 
-<form th:action="@{/peliculas/guardar}" th:object="${pelicula}" method="post">
-    <input type="hidden" th:field="*{id}" />
+<div th:fragment="content">
 
-    <label>Título:</label>
-    <input type="text" th:field="*{titulo}" required /><br/>
+    <h1 th:text="${pelicula.id != null} ? '✏️ Editar Película' : '🎬 Nueva Película'"></h1>
 
-    <label>Género:</label>
-    <input type="text" th:field="*{genero}" required /><br/>
+    <form th:action="@{/peliculas/guardar}"
+          th:object="${pelicula}"
+          method="post"
+          style="background:white; padding:25px; border-radius:8px;
+                 box-shadow:0 0 5px rgba(0,0,0,0.1); max-width:700px;
+                 display:flex; flex-direction:column; gap:20px;">
 
-    <label>Director:</label>
-    <input type="text" th:field="*{director}" /><br/>
+        <!-- ✅ Seguridad CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" th:field="*{id}" />
 
-    <label>Duración (min):</label>
-    <input type="number" th:field="*{duracion}" /><br/>
+        <div style="display:flex; flex-direction:column;">
+            <label>Título:</label>
+            <input type="text" th:field="*{titulo}" required />
+        </div>
 
-    <h3>Copias:</h3>
-    <table>
-        <thead>
-        <tr><th>Formato</th><th>Disponible</th><th>Acciones</th></tr>
-        </thead>
-        <tbody id="copias-body">
+        <div style="display:flex; flex-direction:column;">
+            <label>Género:</label>
+            <input type="text" th:field="*{genero}" required />
+        </div>
+
+        <div style="display:flex; flex-direction:column;">
+            <label>Director:</label>
+            <input type="text" th:field="*{director}" />
+        </div>
+
+        <div style="display:flex; flex-direction:column;">
+            <label>Duración (min):</label>
+            <input type="number" th:field="*{duracion}" />
+        </div>
+
+        <h3>Copias</h3>
+
+        <table style="width:100%; border-collapse: collapse; margin-bottom:10px;">
+            <thead>
+            <tr>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #ccc;">Formato</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #ccc;">Disponible</th>
+                <th style="text-align:left; padding:8px; border-bottom:1px solid #ccc;">Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody id="copias-body">
             <tr th:each="copia, stat : *{copias}">
-                <td>
+                <td style="padding:5px;">
                     <select th:name="copias[__${stat.index}__].formato">
-                        <option th:each="f : ${formatos}" 
-                                th:value="${f.name()}" 
-                                th:text="${f.name()}" 
+                        <option th:each="f : ${formatos}"
+                                th:value="${f.name()}"
+                                th:text="${f.name()}"
                                 th:selected="${copia.formato != null and f.name() == copia.formato.name()}">
                         </option>
                     </select>
                 </td>
-                <td><input type="checkbox" th:field="*{copias[__${stat.index}__].disponible}" /></td>
-                <td><button type="button" onclick="this.closest('tr').remove()">❌</button></td>
+
+                <td style="padding:5px;">
+                    <input type="checkbox" th:field="*{copias[__${stat.index}__].disponible}" />
+                </td>
+
+                <td style="padding:5px;">
+                    <button type="button" class="btn-remove"
+                            onclick="this.closest('tr').remove()">❌</button>
+                </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <button type="button" onclick="agregarCopia()">➕ Añadir copia</button><br/>
-    <button type="submit">💾 Guardar</button>
-</form>
+        <button type="button" class="btn-add" onclick="agregarCopia()" style="padding:8px 12px; border-radius:5px; border:none; background:#1565c0; color:white; cursor:pointer;">➕ Añadir copia</button>
 
-<a th:href="@{/peliculas}">⬅️ Volver al listado</a>
-</body>
+        <button type="submit" style="padding:10px 15px; border-radius:5px; border:none; background:#157a15; color:white; cursor:pointer;">💾 Guardar</button>
+    </form>
+
+    <a th:href="@{/peliculas}" style="display:inline-block; margin-top:15px;">⬅️ Volver al listado</a>
+
+</div>
+
 </html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      th:replace="~{layout :: layout('Editar Usuario', ~{this :: content})}">
+
+<div th:fragment="content">
+
+    <h1>✏️ Editar Usuario</h1>
+
+    <form th:action="@{'/usuarios/' + ${usuarioDto.id} + '/editar'}"
+          th:object="${usuarioDto}" method="post"
+          style="background:white; padding:25px; border-radius:8px;
+                 box-shadow:0 0 5px rgba(0,0,0,0.1); max-width:500px; display:flex; flex-direction:column; gap:15px;">
+
+        <!-- CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <div style="display:flex; flex-direction:column;">
+            <label>Nombre de Usuario:</label>
+            <input type="text" th:field="*{username}" required />
+        </div>
+
+        <div style="display:flex; flex-direction:column;">
+            <label>Rol:</label>
+            <select th:field="*{rol}">
+                <option th:value="EMPLOYEE" th:text="'EMPLOYEE'" 
+                    th:selected="${usuarioDto.rol == T(com.empresa.curso.ejercicio17.entity.enums.Rol).EMPLOYEE}"></option>
+                <option th:value="ADMIN" th:text="'ADMIN'" 
+                    th:selected="${usuarioDto.rol == T(com.empresa.curso.ejercicio17.entity.enums.Rol).ADMIN}"></option>
+            </select>
+        </div>
+
+        <button type="submit"
+                style="padding:10px 15px; background:#157a15; color:white; border:none; border-radius:5px;">
+            💾 Guardar Cambios
+        </button>
+    </form>
+
+    <a th:href="@{/usuarios}" style="display:inline-block; margin-top:15px;">
+        ⬅️ Volver al listado de usuarios
+    </a>
+
+</div>
+</html>
