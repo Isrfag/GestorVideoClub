@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pelicula.id != null} ? 'Editar Película' : 'Nueva Película'"></title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 8px; border: 1px solid #ccc; }
+        button { margin-top: 10px; }
+    </style>
+    <script>
+        function agregarCopia() {
+            const tbody = document.getElementById('copias-body');
+            const index = tbody.children.length;
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>
+                    <select name="copias[${index}].formato">
+                        <option value="DVD">DVD</option>
+                        <option value="BLURAY">BLURAY</option>
+                        <option value="DIGITAL">DIGITAL</option>
+                    </select>
+                </td>
+                <td><input type="checkbox" name="copias[${index}].disponible" checked /></td>
+                <td><button type="button" onclick="this.closest('tr').remove()">❌</button></td>
+            `;
+            tbody.appendChild(fila);
+        }
+    </script>
+</head>
+<body>
+<h1 th:text="${pelicula.id != null} ? 'Editar Película' : 'Agregar Nueva Película'"></h1>
+
+<form th:action="@{/peliculas/guardar}" th:object="${pelicula}" method="post">
+    <input type="hidden" th:field="*{id}" />
+
+    <label>Título:</label>
+    <input type="text" th:field="*{titulo}" required /><br/>
+
+    <label>Género:</label>
+    <input type="text" th:field="*{genero}" required /><br/>
+
+    <label>Director:</label>
+    <input type="text" th:field="*{director}" /><br/>
+
+    <label>Duración (min):</label>
+    <input type="number" th:field="*{duracion}" /><br/>
+
+    <h3>Copias:</h3>
+    <table>
+        <thead>
+        <tr><th>Formato</th><th>Disponible</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="copias-body">
+            <tr th:each="copia, stat : *{copias}">
+                <td>
+                    <select th:name="copias[__${stat.index}__].formato">
+                        <option th:each="f : ${formatos}" 
+                                th:value="${f.name()}" 
+                                th:text="${f.name()}" 
+                                th:selected="${copia.formato != null and f.name() == copia.formato.name()}">
+                        </option>
+                    </select>
+                </td>
+                <td><input type="checkbox" th:field="*{copias[__${stat.index}__].disponible}" /></td>
+                <td><button type="button" onclick="this.closest('tr').remove()">❌</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" onclick="agregarCopia()">➕ Añadir copia</button><br/>
+    <button type="submit">💾 Guardar</button>
+</form>
+
+<a th:href="@{/peliculas}">⬅️ Volver al listado</a>
+</body>
+</html>

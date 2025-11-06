@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>🎬 Películas disponibles</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #fafafa; margin: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #f3f3f3; }
+        .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .success { background-color: #e7f9e7; color: #157a15; }
+        .error { background-color: #fdecea; color: #a71d2a; }
+        button:disabled { background: #ccc; color: #666; }
+        .actions a, .actions button { margin-right: 5px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>🎞️ Videoclub - Catálogo de Películas</h1>
+    <div>
+        <a th:href="@{/peliculas/nueva}">➕ Nueva Película</a> |
+        <a th:href="@{/alquileres}">📋 Ver Alquileres</a>
+    </div>
+</div>
+
+<p><strong>Películas actualmente alquiladas:</strong>
+    <span th:text="${totalAlquileres}"></span>
+</p>
+
+<div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
+<div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Título</th>
+        <th>Género</th>
+        <th>Director</th>
+        <th>Duración</th>
+        <th>Copias disponibles</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="pelicula : ${peliculas}">
+        <td th:text="${pelicula.titulo}"></td>
+        <td th:text="${pelicula.genero}"></td>
+        <td th:text="${pelicula.director}"></td>
+        <td th:text="${pelicula.duracion}"></td>
+        <td th:text="${#lists.size(pelicula.copias.?[disponible])}"></td>
+        <td class="actions">
+            <form th:action="@{'/alquileres/nuevo/' + ${pelicula.id}}" method="get">
+                <button type="submit" 
+                        th:disabled="${#lists.size(pelicula.copias.?[disponible]) == 0}">
+                    🎞️ Alquilar
+                </button>
+            </form>
+            <a th:href="@{'/peliculas/editar/' + ${pelicula.id}}">✏️ Editar</a>
+            <a th:href="@{'/peliculas/eliminar/' + ${pelicula.id}}"
+               onclick="return confirm('¿Eliminar esta película?');">🗑️ Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

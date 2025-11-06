@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>🎞️ Alquileres del Videoclub</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #fafafa; margin: 20px; }
+        h1 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #f3f3f3; }
+        .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .success { background-color: #e7f9e7; color: #157a15; }
+        .error { background-color: #fdecea; color: #a71d2a; }
+        button:disabled { background: #ccc; color: #666; }
+        .actions button { margin-right: 5px; }
+        .filter { margin-bottom: 15px; }
+        a { text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+<h1>🎞️ Alquileres del Videoclub</h1>
+
+<div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
+<div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+<div class="filter">
+    <form th:action="@{/alquileres}" method="get">
+        <label>Filtrar por cliente:</label>
+        <select name="clienteId">
+            <option value="">-- Todos --</option>
+            <option th:each="cliente : ${clientes}" 
+                    th:value="${cliente.id}" 
+                    th:text="${cliente.nombre} + ' ' + ${cliente.apellido}" 
+                    th:selected="${cliente.id == clienteSeleccionado}"></option>
+        </select>
+        <button type="submit">Filtrar</button>
+        <a th:href="@{/alquileres}">Mostrar todos</a>
+    </form>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Película</th>
+        <th>Cliente</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Fin</th>
+        <th>Estado</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="alquiler : ${alquileres}">
+        <td th:text="${alquiler.id}"></td>
+        <td th:text="${alquiler.peliculaTitulo}"></td>
+        <td th:text="${alquiler.clienteNombre}"></td>
+        <td th:text="${alquiler.fechaInicio}"></td>
+        <td th:text="${alquiler.fechaFin}"></td>
+        <td th:text="${alquiler.devuelto ? 'Devuelto' : 'En curso'}"></td>
+        <td class="actions">
+            <form th:action="@{'/alquileres/devolver/' + ${alquiler.id}}" method="post" style="display:inline;">
+                <button type="submit" th:disabled="${alquiler.devuelto}">🔁 Devolver</button>
+            </form>
+        </td>
+    </tr>
+    <tr th:if="${alquileres.empty}">
+        <td colspan="7">No hay alquileres disponibles</td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/peliculas}">⬅️ Volver al catálogo</a>
+</body>
+</html>
