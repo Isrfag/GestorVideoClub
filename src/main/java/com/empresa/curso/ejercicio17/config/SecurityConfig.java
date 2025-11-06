@@ -41,11 +41,19 @@ public class SecurityConfig {
         http
             // CSRF habilitado para formularios Thymeleaf, deshabilitado para APIs
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**","/h2-console/**"))
+                
                 //Publico el login jwt
                 .authorizeHttpRequests(auth -> auth
                 // Login y recursos públicos
                 .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
 
                 // Thymeleaf: vistas protegidas
                 .requestMatchers("/clientes").hasRole("ADMIN")
