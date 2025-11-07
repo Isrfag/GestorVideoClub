@@ -69,7 +69,6 @@ public class AlquilerServiceImpl implements AlquilerService {
             .copia(copia)
             .cliente(cliente)
             .fechaInicio(LocalDate.now())
-            .fechaFin(LocalDate.now().plusDays(3))
             .devuelto(false)
             .build();
 

@@ -41,7 +41,7 @@ public class AlquilerController {
         this.peliculasService = peliculasService;
     }
 
-    // Listado de alquileres existentes (ya tienes esto)
+    // Listado de alquileres existentes 
     @GetMapping
     public String listar(Model model,
                          @ModelAttribute("mensaje") String mensaje,

@@ -1,69 +1,118 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>🎬 Películas disponibles</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #fafafa; margin: 20px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-        th { background-color: #f3f3f3; }
-        .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; }
-        .success { background-color: #e7f9e7; color: #157a15; }
-        .error { background-color: #fdecea; color: #a71d2a; }
-        button:disabled { background: #ccc; color: #666; }
-        .actions a, .actions button { margin-right: 5px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    </style>
-</head>
-<body>
-<div class="header">
-    <h1>🎞️ Videoclub - Catálogo de Películas</h1>
-    <div>
-        <a th:href="@{/peliculas/nueva}">➕ Nueva Película</a> |
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout('Catálogo de Películas', ~{::content})">
+
+<div th:fragment="content">
+
+    <h1>🎬 Catálogo de Películas</h1>
+
+    <div style="margin-bottom: 10px;">
+        <a th:href="@{/peliculas/nueva}" class="btn-add">➕ Nueva Película</a>
+        &nbsp; | &nbsp;
         <a th:href="@{/alquileres}">📋 Ver Alquileres</a>
     </div>
+
+    <p>
+        <strong>Películas actualmente alquiladas:</strong>
+        <span th:text="${totalAlquileres}"></span>
+    </p>
+
+    <!-- POPUP DE MENSAJE -->
+    <div id="popup" style="
+        display:none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #157a15;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+    " th:text="${mensaje}"></div>
+
+    <div id="popup-error" style="
+        display:none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #b30d0d;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+    " th:text="${error}"></div>
+
+    <!-- ESTILOS SOLO PARA LA TABLA -->
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 16px 24px; /* más espacio entre columnas */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .actions button, .actions a {
+            margin-right: 5px;
+        }
+    </style>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Género</th>
+            <th>Director</th>
+            <th>Duración</th>
+            <th>Copias disponibles</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="pelicula : ${peliculas}">
+            <td th:text="${pelicula.titulo}"></td>
+            <td th:text="${pelicula.genero}"></td>
+            <td th:text="${pelicula.director}"></td>
+            <td th:text="${pelicula.duracion}"></td>
+            <td th:text="${#lists.size(pelicula.copias.?[disponible])}"></td>
+            <td class="actions">
+                <form th:action="@{'/alquileres/nuevo/' + ${pelicula.id}}"
+                      method="get" style="display:inline;">
+                    <button type="submit"
+                            th:disabled="${#lists.size(pelicula.copias.?[disponible]) == 0}">
+                        🎞️ Alquilar
+                    </button>
+                </form>
+
+                <a th:href="@{'/peliculas/editar/' + ${pelicula.id}}" class="btn-edit">
+                    ✏️ Editar
+                </a>
+
+                <a th:href="@{'/peliculas/eliminar/' + ${pelicula.id}}"
+                   class="btn-danger"
+                   onclick="return confirm('¿Eliminar esta película?');">
+                    🗑️ Eliminar
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
 </div>
 
-<p><strong>Películas actualmente alquiladas:</strong>
-    <span th:text="${totalAlquileres}"></span>
-</p>
-
-<div th:if="${mensaje}" class="alert success" th:text="${mensaje}"></div>
-<div th:if="${error}" class="alert error" th:text="${error}"></div>
-
-<table>
-    <thead>
-    <tr>
-        <th>Título</th>
-        <th>Género</th>
-        <th>Director</th>
-        <th>Duración</th>
-        <th>Copias disponibles</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="pelicula : ${peliculas}">
-        <td th:text="${pelicula.titulo}"></td>
-        <td th:text="${pelicula.genero}"></td>
-        <td th:text="${pelicula.director}"></td>
-        <td th:text="${pelicula.duracion}"></td>
-        <td th:text="${#lists.size(pelicula.copias.?[disponible])}"></td>
-        <td class="actions">
-            <form th:action="@{'/alquileres/nuevo/' + ${pelicula.id}}" method="get">
-                <button type="submit" 
-                        th:disabled="${#lists.size(pelicula.copias.?[disponible]) == 0}">
-                    🎞️ Alquilar
-                </button>
-            </form>
-            <a th:href="@{'/peliculas/editar/' + ${pelicula.id}}">✏️ Editar</a>
-            <a th:href="@{'/peliculas/eliminar/' + ${pelicula.id}}"
-               onclick="return confirm('¿Eliminar esta película?');">🗑️ Eliminar</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-</body>
 </html>
