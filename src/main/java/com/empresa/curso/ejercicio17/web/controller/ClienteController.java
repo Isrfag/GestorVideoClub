@@ -61,7 +61,7 @@ public class ClienteController {
         try {
             Cliente cliente = clienteService.buscarClientePorId(id);
             model.addAttribute("cliente", ClienteMapper.toDto(cliente));
-            return "clientes/formulario";
+            return "clientes/formulario-admin";
         } catch (ClienteNotFoundException e) {
             return "redirect:/clientes";
         }
@@ -82,7 +82,11 @@ public class ClienteController {
         // Convertimos DTO a entidad antes de guardar
         Cliente cliente = ClienteMapper.toEntity(clienteDto);
         clienteService.guardarCliente(cliente);
+        if(clienteDto.getId() != null){
+            redirectAttributes.addFlashAttribute("mensaje", "👤 Cliente editado con éxito.");
+            return "redirect:/clientes";
 
+        }
         redirectAttributes.addFlashAttribute("mensaje", "👤 Cliente creado con éxito.");
         return "redirect:/clientes";
     }

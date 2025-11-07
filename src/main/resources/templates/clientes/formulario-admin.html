@@ -6,12 +6,15 @@
 
     <h1 th:text="${cliente.id != null} ? '✏️ Editar Cliente' : '➕ Nuevo Cliente'"></h1>
 
-    <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post"
+    <form th:action="@{/clientes/admin/guardar}" th:object="${cliente}" method="post"
           style="background:white; padding:25px; border-radius:8px;
                  box-shadow:0 0 5px rgba(0,0,0,0.1); max-width:500px; display:flex; flex-direction:column; gap:15px;">
 
         <!-- CSRF -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <!-- ✅ ESTE ES EL QUE FALTABA -->
+        <input type="hidden" th:field="*{id}" />
 
         <!-- Si viene desde alquiler -->
         <input type="hidden" name="peliculaId" th:value="${peliculaId}" />
